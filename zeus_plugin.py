@@ -43,6 +43,9 @@ def writeFile(info, filename):
     return ""
 
 
+def search(query):
+    results = imm.Search(imm.Assemble (query))
+
 """
 Main application
 """
@@ -51,12 +54,44 @@ def main(args):
         usage()
     else:
         funcName = args[0]
-        hookAddr = imm.getAddress(funcName)
 
-        hook = HookFunc()
-        hook.add(funcName,hookAddr)
-        return funcName + " Hooked."
+        #hookAddr = imm.getAddress(funcName)
+        #hook = HookFunc()
+        #hook.add(funcName,hookAddr)
+
+        imm.setBreakpointOnName(funcName)
+        # imm.getCurrentAddress()
+        imm.stepIn()
+
+        # search 1st tell-tale instructions
+        results = imm.Search(imm.Assemble ("REP MOVS ANY, ANY"))
+        for r in results:
+            imm.log("Found 1st instruction, setting breakpoint")
+            imm.setBreakpoint(r)
+
+        results = imm.Search(imm.Assemble ("MOV ANY, ANY\n XOR ANY, ANY\n INC EAX\n DEC ESI"))
+        for r in results:
+            imm.log("Found 2st instruction, setting breakpoint")
+            imm.setBreakpoint(r)
+
+        # while
+         # execute
+         # log
+
+        # set breakpoint at the end of instruction
+
+        """
+        curFunc = imm.getCurrentAddress()
+        blocks  = curFunc.getBasicBlocks()
+        calls   = basicBlocks[0].getCalls()
+
+        for c in calls:
+            oc   = imm.disasm(c)
+            call = oc.getDisasm()
+            if
+        """
+
+        return "Search for " + args[0] + "finished"
 
 if __name__ == "__main__":
     main()
-

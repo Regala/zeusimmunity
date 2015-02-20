@@ -8,6 +8,4 @@ class HookFunc(LogBpHook):
         return
 
     def run(self,regs):
-	return
-
-
+        return
