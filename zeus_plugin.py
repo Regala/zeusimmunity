@@ -1,59 +1,35 @@
 import immlib
-import getopt
-import immutils
-from immutils import *
-from hooker import *
-imm = immlib.Debugger()
-"""
-imm must be on this line
-"""
-
-logfile="zeus.log"
-
+from immlib import BpHook
 """
 Template 'inspired' (:D) from @corelan.be
 """
 
-"""
-Helper Functions
-"""
+DESC = "Searches for Zeus/Zbot webinjects"
 
-def usage():
-    imm.Log("  ** No arguments specified ** ")
-    imm.Log("  Usage : ")
-    imm.Log("       blah blah")
+class HookFunc(BpHook):
 
-"""
-FILE=open(filename,"a")  #this will append to the file
-FILE.write("Blah blah" + "\n")
-FILE.close()
-"""
+    def __init__(self):
+        BpHook.__init__(self)
 
-def clearFile(file):
-    FILE = open(file,"w")
-    FILE.write("")
-    FILE.close()
-    return ""
-
-def writeFile(info, filename):
-    info = info.replace('\n',' - ')
-    FILE = open(filename,"a")
-    FILE.write(info+"\n")
-    FILE.close()
-    return ""
-
-
-def search(query):
-    results = imm.Search(imm.Assemble (query))
+    def run(self, regs):
+        """ Runs """
+        imm = immlib.Debugger()
+        imm.log("Hook called")
+        imm.updateLog()
+        #imm.pause()
+        #imm.stepIn() # enter malicious JMP
+        #imm.log("Stepped in and paused")
 
 """
 Main application
 """
 def main(args):
     if not args:
-        usage()
+        imm.log("Error args")
     else:
-        funcName = args[0]
+        imm = immlib.Debugger()
+        #funcName = args[0]
+        funcName = "HttpSendRequestA"
 
         #hookAddr = imm.getAddress(funcName)
         #hook = HookFunc()
@@ -64,26 +40,20 @@ def main(args):
         imm.stepIn()
 
         # search 1st tell-tale instructions
-        results = imm.search(imm.Assemble ("REP MOVS ANY, ANY"))
+        results = imm.search(imm.assemble ("REP MOVS ANY,ANY"))
         for r in results:
             imm.log("Found 1st instruction, setting breakpoint")
             imm.setBreakpoint(r)
 
-        results = imm.search(imm.Assemble ("MOV ANY, ANY\n XOR ANY, ANY\n INC EAX\n DEC ESI"))
+        results = imm.search(imm.assemble ("MOV ANY, ANY\n XOR ANY, ANY\n INC EAX\n DEC ESI"))
         for r in results:
             imm.log("Found 2st instruction, setting breakpoint")
             imm.setBreakpoint(r)
 
-        # while
-         # execute
-         # log
-
-        # set breakpoint at the end of instruction
-
         """
         curFunc = imm.getCurrentAddress()
         blocks  = curFunc.getBasicBlocks()
-        calls   = basicBlocks[0].getCalls()
+        calls   = basicBlocks[0].getCalls() 
 
         for c in calls:
             oc   = imm.disasm(c)
@@ -91,7 +61,5 @@ def main(args):
             if
         """
 
+        imm.updateLog()
         return "Search for " + args[0] + "finished"
-
-if __name__ == "__main__":
-    main()
