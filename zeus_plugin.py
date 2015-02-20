@@ -64,12 +64,12 @@ def main(args):
         imm.stepIn()
 
         # search 1st tell-tale instructions
-        results = imm.Search(imm.Assemble ("REP MOVS ANY, ANY"))
+        results = imm.search(imm.Assemble ("REP MOVS ANY, ANY"))
         for r in results:
             imm.log("Found 1st instruction, setting breakpoint")
             imm.setBreakpoint(r)
 
-        results = imm.Search(imm.Assemble ("MOV ANY, ANY\n XOR ANY, ANY\n INC EAX\n DEC ESI"))
+        results = imm.search(imm.Assemble ("MOV ANY, ANY\n XOR ANY, ANY\n INC EAX\n DEC ESI"))
         for r in results:
             imm.log("Found 2st instruction, setting breakpoint")
             imm.setBreakpoint(r)
