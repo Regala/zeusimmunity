@@ -2,7 +2,11 @@ import immlib
 import getopt
 import immutils
 from immutils import *
+from hooker import *
 imm = immlib.Debugger()
+"""
+imm must be on this line
+"""
 
 logfile="zeus.log"
 
@@ -46,10 +50,13 @@ def main(args):
     if not args:
         usage()
     else:
-        imm.Log("Number of arguments : %d " % len(args))
-        cnt=0
-        while (cnt < len(args)):
-            imm.Log(" Argument %d : %s" % (cnt+1,args[cnt]))
-            if (args[cnt] == "world"):
-                imm.Log("  You said %s !" % (args[cnt]),focus=1, highlight=1)
-            cnt=cnt+1
+        funcName = args[0]
+        hookAddr = imm.getAddress(funcName)
+
+        hook = HookFunc()
+        hook.add(funcName,hookAddr)
+        return funcName + " Hooked."
+
+if __name__ == "__main__":
+    main()
+
